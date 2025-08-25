@@ -8,6 +8,7 @@ int main() {
 
 	//Engine loop
 	while (engine->getRunning()) {
+		engine->poll();
 		engine->update();
 		engine->draw();
 	}

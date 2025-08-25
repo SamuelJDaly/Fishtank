@@ -1,35 +1,30 @@
 #pragma once
 #include <iostream>
-#include <vector>
-#include <random>
 #include <time.h>
 #include <SFML/Graphics.hpp>
+#include "entt.hpp"
+#include "Scene.h"
 
-#include "Fish.h"
-#include "Util.h"
 
-class Engine
-{
+class Engine {
 private:
 	//#### Data
-	sf::RenderWindow window;
+	bool isRunning = true;
+	sf::RenderWindow win;
+	entt::registry reg;
+
 	sf::Event event;
 	sf::Clock engineClk;
-	float dt;
-	bool isRunning = true;
+	float dt = 0;
 
 	std::vector<sf::Texture*> textures;
 
-	sf::IntRect tankBounds = {0,0,1200,800};
-	std::vector<Fish*> fish;
-	std::vector<Fish> fictionary;
-
+	Scene* currScene;
 
 	//#### Init
 	void initWindow();
 	void initTextures();
-	void initFictionary();
-	void initTest();
+	void initScene();
 
 public:
 	//#### Constructors and Destructors
@@ -43,4 +38,3 @@ public:
 
 	bool getRunning();
 };
-
