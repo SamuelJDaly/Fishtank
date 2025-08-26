@@ -123,7 +123,7 @@ void Scene_Main::poll(sf::Event event)
 
 void Scene_Main::update(float dt)
 {
-	system_update_fish.Update(*reg, dt);
+	system_update_fish.Update(*reg, *win, dt);
 }
 
 void Scene_Main::render()

@@ -35,6 +35,7 @@ struct Component_Behavior {
 
 	sf::Vector2f fleeSource = { 0,0 };
 	float angleToSource = 0;
+	float fleeRange = 50;
 
 	float hunger = 0;
 	float hungerRate = 1; //Hunger increase per second

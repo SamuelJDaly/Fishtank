@@ -103,13 +103,35 @@ void System_Update_Fish::Update(entt::registry& reg, sf::RenderWindow &win, floa
 			//## Fleeing
 			if (b.goalChanged) {
 				if (s.isPrintVerbose) {
-					std::cout << "Goal: Moving" << std::endl;
+					std::cout << "Goal: Fleeing" << std::endl;
 				}
 
 				
 
 				b.goalChanged = 0;
 			}
+			else {
+
+				//Set sprite direction
+				if (b.fleeSource.x <= g.sprite.getPosition().x) {
+					g.sprite.setScale(-1 * s.scale, s.scale);
+				}
+				else {
+					g.sprite.setScale(s.scale, s.scale);
+				}
+
+				b.angleToTarget = utl::getAngle(g.sprite.getPosition().x, g.sprite.getPosition().y, b.fleeSource.x, b.fleeSource.y);
+				
+				std::cout << "Flee Angle: " << utl::radToDeg(b.angleToTarget) << std::endl;
+
+
+				float moveX = cosf(b.angleToSource) * s.speed * dt;
+				float moveY = sinf(b.angleToSource) * s.speed * dt;
+
+				g.sprite.move(moveX, moveY);
+			}
+
+			
 
 			break;
 		case 3:
@@ -122,9 +144,13 @@ void System_Update_Fish::Update(entt::registry& reg, sf::RenderWindow &win, floa
 
 		//Check for flee
 		sf::Vector2f mousePos = { (float)sf::Mouse::getPosition(win).x , (float)sf::Mouse::getPosition(win).y};
-		if (b.goal != 2 && utl::dist(g.sprite.getPosition().x, g.sprite.getPosition().y, mousePos.x, mousePos.y) <= 5.f) {
+		if (b.goal != 2 && utl::dist(g.sprite.getPosition().x, g.sprite.getPosition().y, mousePos.x, mousePos.y) <= b.fleeRange) {
 			b.goal = 2;
 			b.fleeSource = mousePos;
+			b.goalChanged = true;
+		}
+		else if (b.goal == 2 && utl::dist(g.sprite.getPosition().x, g.sprite.getPosition().y, mousePos.x, mousePos.y) > b.fleeRange) {
+			b.goal = 0;
 			b.goalChanged = true;
 		}
 
