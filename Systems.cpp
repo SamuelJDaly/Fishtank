@@ -26,6 +26,11 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 				g.sprite.move(0,b.bobDirection);
 
 				b.bobDirection *= -1;
+
+				//Do flip
+				if (utl::randRange(0, 10) < 5) {
+					g.sprite.scale(-1, 1);
+				}
 			}
 
 			break;
@@ -39,6 +44,10 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 
 				b.targetPos.x = utl::randRange(g.sprite.getPosition().x - b.range, g.sprite.getPosition().x + b.range);
 				b.targetPos.y = utl::randRange(g.sprite.getPosition().y - b.range, g.sprite.getPosition().y + b.range);
+
+				if (s.isPrintVerbose) {
+					std::cout << "Init Target: (" << b.targetPos.x << ", " << b.targetPos.y << ")" << std::endl;
+				}
 
 				//Apply bounds
 				if (b.targetPos.x >= b.bounds.width) {
@@ -104,6 +113,7 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 		if (b.goal == 0) {
 			b.decisionTimer += dt;
 		}
+
 
 		if (b.decisionTimer >= b.decisionThreshold) {
 			b.decisionTimer = 0;

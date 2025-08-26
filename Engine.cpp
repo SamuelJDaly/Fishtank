@@ -3,7 +3,14 @@
 //################## INIT #############################################
 void Engine::initWindow()
 {
-	win.create(sf::VideoMode(1200,800), "Fishtank");
+	win.create(sf::VideoMode(1200,800), "Fishtank", sf::Style::None);
+
+	HWND hwnd = win.getSystemHandle(); // Get the native window handle
+	// Set window to be layered
+	SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+	// Set the alpha value for transparency (0 = fully transparent, 255 = fully opaque)
+	SetLayeredWindowAttributes(hwnd, RGB(255, 255, 255), 255, LWA_COLORKEY | LWA_ALPHA);
+	
 }
 
 void Engine::initTextures()
@@ -93,7 +100,7 @@ void Engine::update()
 //##### Draw
 void Engine::draw()
 {
-	win.clear();
+	win.clear(sf::Color::White);
 
 	currScene->render();
 
