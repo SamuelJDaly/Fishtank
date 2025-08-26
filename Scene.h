@@ -37,8 +37,14 @@ private:
 	System_Update_Fish system_update_fish;
 	System_Rendering system_renderer;
 
+	int keyFlag = 0;
+	float dbThreshold = .1;
+	float dbTimer = 0;
+
 	//### Init
 	void initTest();
+	void addFishRnd();
+	void addFishRnd(sf::Vector2f pos);
 
 public:
 	//### Constructor and Destructor
