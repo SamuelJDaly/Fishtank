@@ -22,7 +22,7 @@ Rendering systems are called by a function of the form Render(entt::registry &re
 //###################### UPDATING ###########################################
 
 struct System_Update_Fish {
-	void Update(entt::registry& reg, float dt);
+	void Update(entt::registry& reg, sf::RenderWindow &win, float dt);
 };
 
 

@@ -1,10 +1,10 @@
 #include "Systems.h"
 //################## UPDATING	#################################################
-void System_Update_Fish::Update(entt::registry& reg, float dt)
+void System_Update_Fish::Update(entt::registry& reg, sf::RenderWindow &win, float dt)
 {
 	auto view = reg.view<Component_Stats, Component_Behavior, Component_Graph>();
 
-	view.each([dt](Component_Stats &s, Component_Behavior &b, Component_Graph &g) {
+	view.each([dt, &win](Component_Stats &s, Component_Behavior &b, Component_Graph &g) {
 		//Increase hunger value
 		b.hunger += b.hungerRate * dt;
 
@@ -101,6 +101,15 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 			break;
 		case 2:
 			//## Fleeing
+			if (b.goalChanged) {
+				if (s.isPrintVerbose) {
+					std::cout << "Goal: Moving" << std::endl;
+				}
+
+				
+
+				b.goalChanged = 0;
+			}
 
 			break;
 		case 3:
@@ -109,6 +118,16 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 			break;
 		}
 		
+
+
+		//Check for flee
+		sf::Vector2f mousePos = { (float)sf::Mouse::getPosition(win).x , (float)sf::Mouse::getPosition(win).y};
+		if (b.goal != 2 && utl::dist(g.sprite.getPosition().x, g.sprite.getPosition().y, mousePos.x, mousePos.y) <= 5.f) {
+			b.goal = 2;
+			b.fleeSource = mousePos;
+			b.goalChanged = true;
+		}
+
 		//Make decision if idle
 		if (b.goal == 0) {
 			b.decisionTimer += dt;
