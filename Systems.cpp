@@ -1,10 +1,10 @@
 #include "Systems.h"
 //################## UPDATING	#################################################
-void System_Update_Fish::Update(entt::registry& reg, float dt)
+void System_Update_Fish::Update(entt::registry& reg, sf::RenderWindow& win, float dt)
 {
 	auto view = reg.view<Component_Stats, Component_Behavior, Component_Graph>();
 
-	view.each([dt](Component_Stats &s, Component_Behavior &b, Component_Graph &g) {
+	view.each([dt, &win](Component_Stats& s, Component_Behavior& b, Component_Graph& g) {
 		//Increase hunger value
 		b.hunger += b.hungerRate * dt;
 
@@ -23,7 +23,7 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 			b.bobTimer += dt;
 			if (b.bobTimer >= b.bobThreshold) {
 				b.bobTimer = 0;
-				g.sprite.move(0,b.bobDirection);
+				g.sprite.move(0, b.bobDirection);
 
 				b.bobDirection *= -1;
 
@@ -101,6 +101,55 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 			break;
 		case 2:
 			//## Fleeing
+			if (b.goalChanged) {
+				if (s.isPrintVerbose) {
+					std::cout << "Goal: Fleeing" << std::endl;
+				}
+
+
+				b.goalChanged = 0;
+			}
+			else {
+				//Get mouse pos
+				b.fleeSource = { (float)sf::Mouse::getPosition(win).x,(float)sf::Mouse::getPosition(win).y };
+
+				//Set sprite direction
+				if (b.fleeSource.x <= g.sprite.getPosition().x) {
+					g.sprite.setScale(-1 * s.scale, s.scale);
+				}
+				else {
+					g.sprite.setScale(s.scale, s.scale);
+				}
+
+
+				b.angleToSource = utl::getAngle(g.sprite.getPosition().x, g.sprite.getPosition().y, b.fleeSource.x, b.fleeSource.y);
+
+
+				float moveX = -1 * b.fleeSpeedMod * cosf(b.angleToSource) * s.speed * dt;
+				float moveY = -1 * b.fleeSpeedMod * sinf(b.angleToSource) * s.speed * dt;
+
+
+				g.sprite.move(moveX, moveY);
+
+				//Apply bounds
+				if (g.sprite.getPosition().x >= b.bounds.width - 10) {
+					g.sprite.setPosition(b.bounds.width - 10, g.sprite.getPosition().y);
+				}
+
+				if (g.sprite.getPosition().y >= b.bounds.height - 10) {
+					g.sprite.setPosition(g.sprite.getPosition().x, b.bounds.height - 10);
+				}
+
+				if (g.sprite.getPosition().x < b.bounds.left + 10) {
+					g.sprite.setPosition(b.bounds.left + 10, g.sprite.getPosition().y);
+				}
+
+				if (g.sprite.getPosition().y < b.bounds.top + 10) {
+					g.sprite.setPosition(g.sprite.getPosition().x, b.bounds.top + 10);
+				}
+			}
+
+
 
 			break;
 		case 3:
@@ -108,7 +157,21 @@ void System_Update_Fish::Update(entt::registry& reg, float dt)
 
 			break;
 		}
-		
+
+
+
+		//Check for flee
+		sf::Vector2f mousePos = { (float)sf::Mouse::getPosition(win).x , (float)sf::Mouse::getPosition(win).y };
+		if (b.goal != 2 && utl::dist(g.sprite.getPosition().x, g.sprite.getPosition().y, mousePos.x, mousePos.y) <= b.fleeRange) {
+			b.goal = 2;
+			b.fleeSource = mousePos;
+			b.goalChanged = true;
+		}
+		else if (b.goal == 2 && utl::dist(g.sprite.getPosition().x, g.sprite.getPosition().y, mousePos.x, mousePos.y) > b.fleeRange) {
+			b.goal = 0;
+			b.goalChanged = true;
+		}
+
 		//Make decision if idle
 		if (b.goal == 0) {
 			b.decisionTimer += dt;

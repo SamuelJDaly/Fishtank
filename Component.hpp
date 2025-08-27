@@ -23,18 +23,20 @@ struct Component_Behavior {
 
 	float decisionTimer = 0;
 	float decisionThreshold = 3;
-	
+
 	float bobTimer = 0;
 	float bobThreshold = 1;
 	int bobDirection = -1;
 
-	sf::Vector2f targetPos = {0,0};
+	sf::Vector2f targetPos = { 0,0 };
 	float angleToTarget = 0;
 	float distToTarget = 0;
 	float range = 50;
 
 	sf::Vector2f fleeSource = { 0,0 };
 	float angleToSource = 0;
+	float fleeRange = 80;
+	float fleeSpeedMod = 10.f;
 
 	float hunger = 0;
 	float hungerRate = 1; //Hunger increase per second

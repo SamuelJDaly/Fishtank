@@ -21,3 +21,13 @@ float utl::randRange(float min, float max)
 {
 	return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
 }
+
+float utl::radToDeg(float radians)
+{
+	return 180 * (radians / PI);
+}
+
+float utl::degToRad(float degrees)
+{
+	return PI * (degrees / 180.f);
+}
