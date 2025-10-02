@@ -2,11 +2,27 @@
 //################## UPDATING	#################################################
 void System_Update_Fish::Update(entt::registry& reg, sf::RenderWindow& win, float dt)
 {
+
 	auto view = reg.view<Component_Stats, Component_Behavior, Component_Graph>();
 
-	view.each([dt, &win](Component_Stats& s, Component_Behavior& b, Component_Graph& g) {
+	//Get mouse pos
+	sf::Vector2f mousePos = { (float)sf::Mouse::getPosition(win).x ,(float)sf::Mouse::getPosition(win).y};
+
+	view.each([dt, &win, mousePos](Component_Stats& s, Component_Behavior& b, Component_Graph& g) {
 		//Increase hunger value
 		b.hunger += b.hungerRate * dt;
+
+
+		//Check For Grab
+		if (g.sprite.getGlobalBounds().contains(mousePos)) {
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				if (!b.goalChanged) {
+					b.goal = 4;
+					b.goalChanged = true;
+				}
+				
+			}
+		}
 
 		switch (b.goal) {
 		case 0:
@@ -154,6 +170,24 @@ void System_Update_Fish::Update(entt::registry& reg, sf::RenderWindow& win, floa
 			break;
 		case 3:
 			//## Feeding
+
+			break;
+		case 4:
+			//## Picked Up
+			//State Change Logic
+			if (b.goalChanged) {
+				g.sprite.scale(1.25, 1.25);
+				b.goalChanged = 0;
+			}
+
+			//State update logic
+			if (!sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				b.goal = 0;
+				b.goalChanged = 1;
+				g.sprite.scale(1 / 1.25, 1 / 1.25);
+			}
+
+			g.sprite.setPosition(mousePos);
 
 			break;
 		}
